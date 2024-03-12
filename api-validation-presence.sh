@@ -20,7 +20,7 @@ fi
 
 touch namespaces.json
 
-echo "Querying the F5 Distributed Cloud API for the necessary information, please wait... "
+echo "Querying the F5 Distributed Cloud API for the necessary information, this can take some time depending on the number of configuration objects, please wait... "
 
 curl -s --location "$URL" --header "Authorization: APIToken $APITOKEN" > namespaces.json
 
