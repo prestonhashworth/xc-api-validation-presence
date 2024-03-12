@@ -20,7 +20,9 @@ fi
 
 touch namespaces.json
 
-curl --location "$URL" --header "Authorization: APIToken $APITOKEN" > namespaces.json
+echo "Querying the F5 Distributed Cloud API for the necessary information, please wait... "
+
+curl -s --location "$URL" --header "Authorization: APIToken $APITOKEN" > namespaces.json
 
 # Use jq to parse the namespaces.JSON file and store them in the name_values variable
 json=$(cat namespaces.json)
@@ -56,17 +58,15 @@ for index in ${!substrings[@]}; do
   namespace_uri_segment="${substrings[$index]}" 
   #echo $namespace_uri_segment
   final_uri="${base_uri}${namespace_uri_segment}${suffix_uri}"
-  curl --location "$final_uri" --header "Authorization: APIToken $APITOKEN" >> lb-config.json
+  curl -s --location "$final_uri" --header "Authorization: APIToken $APITOKEN" >> lb-config.json
 done
 
 jq -r '.items[] | select((.name | length) > 0 and (.labels | length) > 0) | {name, labels}' < lb-config.json > api-spec-present.json
 
-cat api-spec-present.json | more
-#config_json=$(cat lb-config.json)
-#lb_config_values=$(echo "$config)json" | jq -nc '{items: [] | .items += (inputs.[] | select(.labels) | {name, labels} )}'
 
 
-# remove the namespaces.json as it is no longer needed
-rm namespaces.json
+
+# housekeeping
+rm namespaces.json lb-config.json
 
 ### What remains is to convert the api-spec-present.json file into a api-validation-report.csv file for general consumption
