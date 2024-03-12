@@ -12,3 +12,5 @@ The tenant subdomain is the where you log in to the console. Ex. [MY-ORGANIZATIO
 
 The APIToken is a credential that is generated in the console (or via API call). For more information please visit https://docs.cloud.f5.com/docs-v2/administration/how-tos/user-mgmt/Credentials
 
+Running this script will produce a JSON file that includes HTTP LB name, and the labels attached to it. 
+  - When the label "ves.io/api-scope" is present with a value, that HTTP LB has API validation against an API Spec file configured.
