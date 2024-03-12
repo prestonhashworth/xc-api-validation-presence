@@ -5,8 +5,10 @@ This is a BASH shell script written to query all the namespaces in an XC tenant,
 
 To use this script without human interaction it is necessary to define environmental variables for the tenant name (TENANT) as well as an API token (APITOKEN), otherwise this script will ask for them.
 
+```
 export TENANT=[TENANT SUBDOMAIN VALUE]
 export APITOKEN=[APITOKEN VALUE CREATED IN THE XC CONSOLE]
+```
 
 The tenant subdomain is the where you log in to the console. Ex. [MY-ORGANIZATION].console.ves.volterra.io
 
