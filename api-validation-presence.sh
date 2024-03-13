@@ -11,7 +11,7 @@ fi
 
 URL=https://$TENANT.console.ves.volterra.io/api/web/namespaces
 
-echo $URL
+#echo $URL
 
 if [[ -z "${APITOKEN}" ]]; then
     echo "You do not have an API Token defined as an environment variable. Please provide the API Token from the F5 Distributed Cloud Console. See https://docs.cloud.f5.com/docs-v2/administration/how-tos/user-mgmt/Credentials for more information. " \
@@ -50,23 +50,25 @@ done
 
 declare -a namespace_urls
 
-
 base_uri="https://$TENANT.console.ves.volterra.io/api/config/namespaces/"
 suffix_uri=/http_loadbalancers
 for index in ${!substrings[@]}; do
-  #substring=${substrings[$index]}
+  
   namespace_uri_segment="${substrings[$index]}" 
-  #echo $namespace_uri_segment
   final_uri="${base_uri}${namespace_uri_segment}${suffix_uri}"
   curl -s --location "$final_uri" --header "Authorization: APIToken $APITOKEN" >> lb-config.json
 done
 
-jq -r '.items[] | select((.name | length) > 0 and (.labels | length) > 0) | {name, labels}' < lb-config.json > api-spec-present.json
-
-
-
-
-# housekeeping
-rm namespaces.json lb-config.json
+jq -r '.items[] | select((.namespace | length) > 0 and (.name | length) > 0 and (.labels | length) > 0) | {namespace, name, labels}' < lb-config.json > api-spec-present.json
 
 ### What remains is to convert the api-spec-present.json file into a api-validation-report.csv file for general consumption
+
+# Removing any pre-existing api-validation-report.csv file in the directory
+rm api-validation-report.csv
+
+echo "NAMESPACE,LB-NAME,SPEC-FILE" >> api-validation-report.csv
+
+jq -r '[.namespace, .name, .labels."ves.io/api-scope"] | @csv' api-spec-present.json >> api-validation-report.csv 
+
+# housekeeping
+rm namespaces.json lb-config.json api-spec-present.json
